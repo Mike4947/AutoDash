@@ -1,0 +1,4 @@
+psutil>=5.9.8
+pyqt5>=5.15.10
+pyqtgraph>=0.13.7
+GPUtil>=1.4.0

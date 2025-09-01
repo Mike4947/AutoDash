@@ -1,0 +1,1 @@
+timestamp,cpu_total,ram_percent,net_up_bps,net_down_bps,disk_read_bps,disk_write_bps,gpu_load,gpu_temp
