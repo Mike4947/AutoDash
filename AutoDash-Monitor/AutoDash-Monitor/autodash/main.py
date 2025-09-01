@@ -1,5 +1,5 @@
 import sys, os, time
-from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation
+from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation, QSequentialAnimationGroup
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
                              QLabel, QGroupBox, QProgressBar, QPushButton, QTabWidget, QTableWidget,
                              QTableWidgetItem, QMessageBox, QCheckBox, QSpinBox)
@@ -166,17 +166,24 @@ class MainWindow(QMainWindow):
 
     # ---------------- Engine Start Animation ----------------
     def _engine_start_animation(self):
-        # Rev up CPU & GPU gauges quickly at launch
+        # Rev up and back down sequentially per gauge
+        self._anim_groups = []  # keep refs so GC doesn't stop animations
         for g in self.cpu_gauges + [self.gpu_gauge, self.cpu_total_gauge]:
-            anim = QPropertyAnimation(g, b"value", self)
-            anim.setDuration(1200)
-            anim.setStartValue(0); anim.setEndValue(100)
-            anim.start()
-            anim2 = QPropertyAnimation(g, b"value", self)
-            anim2.setDuration(700)
-            anim2.setStartValue(100); anim2.setEndValue(0)
-            anim2.setStartDelay(1200)
-            anim2.start()
+            up = QPropertyAnimation(g, b"value", self)
+            up.setDuration(1200)
+            up.setStartValue(0)
+            up.setEndValue(100)
+
+            down = QPropertyAnimation(g, b"value", self)
+            down.setDuration(700)
+            down.setStartValue(100)
+            down.setEndValue(0)
+
+            seq = QSequentialAnimationGroup(self)
+            seq.addAnimation(up)
+            seq.addAnimation(down)
+            seq.start()
+            self._anim_groups.append(seq)
 
     # ---------------- Refresh ----------------
     def refresh(self):

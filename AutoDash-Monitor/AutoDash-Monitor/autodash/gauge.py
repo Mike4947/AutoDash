@@ -36,36 +36,40 @@ class Gauge(QWidget):
 
     def paintEvent(self, e):
         side = min(self.width(), self.height())
-        rect = QRectF((self.width()-side)/2+10, (self.height()-side)/2+10, side-20, side-20)
+        rect = QRectF((self.width() - side) / 2 + 10, (self.height() - side) / 2 + 10, side - 20, side - 20)
         start_angle = 225  # degrees
         span_angle = 270
-        with QPainter(self) as p:
-            p.setRenderHint(QPainter.Antialiasing)
-            # background arc
-            pen = QPen(QColor(30, 42, 54), 14)
-            p.setPen(pen)
-            p.drawArc(rect, int((90-start_angle)*16), int(-span_angle*16))
 
-            # progress arc
-            frac = 0 if self._max == self._min else (self._value - self._min)/(self._max - self._min)
-            frac = max(0.0, min(1.0, frac))
-            # gradient-ish pen
-            pen2 = QPen(QColor(55, 149, 255), 16)
-            p.setPen(pen2)
-            p.drawArc(rect, int((90-start_angle)*16), int(-span_angle*frac*16))
+        p = QPainter(self)
+        p.setRenderHint(QPainter.Antialiasing)
 
-            # labels
-            p.setPen(QColor(158, 207, 255))
-            font = QFont(self.font())
-            font.setPointSize(int(side/10))
-            font.setBold(True)
-            p.setFont(font)
-            value_text = f"{int(self._value)}{self._unit}"
-            p.drawText(self.rect(), Qt.AlignCenter, value_text)
+        # background arc
+        pen = QPen(QColor(30, 42, 54), 14)
+        p.setPen(pen)
+        p.drawArc(rect, int((90 - start_angle) * 16), int(-span_angle * 16))
 
-            # bottom label
-            p.setPen(QColor(120, 160, 200))
-            font2 = QFont(self.font())
-            font2.setPointSize(int(side/14))
-            p.setFont(font2)
-            p.drawText(self.rect().adjusted(0, int(side*0.35), 0, 0), Qt.AlignHCenter | Qt.AlignTop, self._label)
+        # progress arc
+        frac = 0 if self._max == self._min else (self._value - self._min) / (self._max - self._min)
+        frac = max(0.0, min(1.0, frac))
+        pen2 = QPen(QColor(55, 149, 255), 16)
+        p.setPen(pen2)
+        p.drawArc(rect, int((90 - start_angle) * 16), int(-span_angle * frac * 16))
+
+        # value text
+        p.setPen(QColor(158, 207, 255))
+        font = QFont(self.font())
+        font.setPointSize(int(side / 10))
+        font.setBold(True)
+        p.setFont(font)
+        value_text = f"{int(self._value)}{self._unit}"
+        p.drawText(self.rect(), Qt.AlignCenter, value_text)
+
+        # bottom label
+        p.setPen(QColor(120, 160, 200))
+        font2 = QFont(self.font())
+        font2.setPointSize(int(side / 14))
+        p.setFont(font2)
+        p.drawText(self.rect().adjusted(0, int(side * 0.35), 0, 0), Qt.AlignHCenter | Qt.AlignTop, self._label)
+
+        p.end()
+
